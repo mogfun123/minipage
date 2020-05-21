@@ -5,7 +5,7 @@ import { login } from ".././utils/api";
 import { setToken } from ".././utils/index";
 import { withRouter } from "react-router";
 // import { browserHistory } from 'react-router'
-class GoodsList extends Component {
+class LoginPage extends Component {
   state = {
     uname: "admin",
     pwd: "2c1be7c6b94cd14c0b855a38900047a2",
@@ -78,6 +78,6 @@ class GoodsList extends Component {
     );
   }
 }
-const Home = withRouter(createForm()(GoodsList));
+const Home = withRouter(createForm()(LoginPage));
 
 export default Home;

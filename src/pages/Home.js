@@ -134,7 +134,7 @@ class Lists extends Component {
       console.log("rowData", rowID, rowData);
       return (
         <div key={rowID} className="list_item">
-          <WingBlank className="pd">
+          <WingBlank size='lg' className="pd">
             <Carousel autoplay={false} infinite>
               {rowData.image.map((imgurl) => (
                 <a
