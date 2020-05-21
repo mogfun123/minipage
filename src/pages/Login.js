@@ -12,24 +12,7 @@ class LoginPage extends Component {
     sign:'28fe4e8be969958ec956e3b7537a9cde',
   };
   componentDidMount() {}
-  handleClick = () => {
-    let { uname, pwd,sign } = this.state;
-    login({
-      uname,
-      sign,
-      pwd,
-    }).then((res)=>{
-      if(res.code==0){
-        setToken(res.data.token)
-        setTimeout(()=>{
-          console.log(this.props)
-          this.props.history.push('/')
-         
-        },100)
-      }
-    })
-    
-  };
+
   onUserChange = (value) => {
     value = value.replace(/\s/g, "");
     this.setState({

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
 import { createForm } from "rc-form";
-import { queryGoodList } from ".././utils/api";
+import { uploadImages, uploadGoodsInfo } from ".././utils/api";
 import { path } from ".././utils/request";
 import { withRouter } from "react-router";
 
@@ -12,6 +12,7 @@ import {
   InputItem,
   Carousel,
   WingBlank,
+  Flex,
   TextareaItem,
   ImagePicker,
   WhiteSpace,
@@ -53,6 +54,43 @@ class Editpage extends Component {
     //   }
     // });
   }
+  onSubmit = () => {
+    const form = this.props.form;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      console.log(fieldsValue);
+    //   this.readyUpLoadImage().then((files) => {
+    //     this.readyUploadGoodsInfo();
+    //   });
+    this.readyUpLoadImage()
+    });
+  };
+  readyUpLoadImage = () => {
+    let { files } = this.state;
+    let file = files[0].file
+    let formData = new FormData();
+    formData.append(file.name, file);
+    let config = {
+      headers: { "Content-Type": "multipart/form-data" },
+    };
+    uploadImages(
+      formData,
+      config,
+    ).then((res) => {
+      if (res.code == 0) {
+        return res;
+      }
+    });
+  };
+  readyUploadGoodsInfo = (data) => {
+    // let {files } = this.state;
+    uploadGoodsInfo({
+      data,
+    }).then((res) => {
+      if (res.code == 0) {
+      }
+    });
+  };
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
     this.setState({
@@ -71,10 +109,10 @@ class Editpage extends Component {
               autoHeight
               placeholder="文案"
             />
-             <WhiteSpace size="sm" />
+            <WhiteSpace size="sm" />
           </WingBlank>
         </List>
-       
+
         <List renderHeader={() => "选择图片"}>
           <WingBlank>
             <ImagePicker
@@ -107,9 +145,18 @@ class Editpage extends Component {
             ></TextareaItem>
           </WingBlank>
         </List>
+        <List>
+          <WhiteSpace size="lg" />
+          <Flex justify="center">
+            <Button type="primary" onClick={this.onSubmit} inline>
+              primary
+            </Button>
+          </Flex>
+          <WhiteSpace size="lg" />
+        </List>
       </Fragment>
     );
   }
 }
-
-export default withRouter(createForm()(Editpage));
+const EditCom = withRouter(createForm()(Editpage));
+export default EditCom;
