@@ -59,37 +59,39 @@ class Editpage extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       console.log(fieldsValue);
-    //   this.readyUpLoadImage().then((files) => {
-    //     this.readyUploadGoodsInfo();
-    //   });
-    this.readyUpLoadImage()
+      //   this.readyUpLoadImage().then((files) => {
+      //     this.readyUploadGoodsInfo();
+      //   });
+      this.readyUpLoadImage();
     });
   };
   readyUpLoadImage = () => {
-    let { files } = this.state;
-    let file = files[0].file
-    let formData = new FormData();
-    formData.append(file.name, file);
-    let config = {
-      headers: { "Content-Type": "multipart/form-data" },
-    };
-    uploadImages(
-      formData,
-      config,
-    ).then((res) => {
-      if (res.code == 0) {
-        return res;
-      }
-    });
+    // let { files } = this.state;
+    // let file = files[0].file;
+    // let formData = new FormData();
+    // formData.append('file', file);
+    // uploadImages(formData).then((res) => {
+    //   if (res.code == 0) {
+    //     console.log("res", res);
+    //     this.readyUploadGoodsInfo();
+    //     return res;
+    //   }
+    // });
+     this.readyUploadGoodsInfo();
   };
   readyUploadGoodsInfo = (data) => {
-    // let {files } = this.state;
-    uploadGoodsInfo({
-      data,
-    }).then((res) => {
-      if (res.code == 0) {
-      }
+    const form = this.props.form;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      uploadGoodsInfo({
+        images:'20200520/xcv.jpg',
+        ...fieldsValue
+      }).then((res) => {
+        if (res.code == 0) {
+        }
+      });
     });
+   
   };
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
@@ -105,7 +107,7 @@ class Editpage extends Component {
         <List renderHeader={() => "文案"}>
           <WingBlank size="lg">
             <TextareaItem
-              {...getFieldProps("describe")}
+              {...getFieldProps("description")}
               autoHeight
               placeholder="文案"
             />
@@ -126,22 +128,22 @@ class Editpage extends Component {
           </WingBlank>
         </List>
         <WhiteSpace size="sm" />
-        <List renderHeader={() => "价格/URL/paypal"}>
+        <List renderHeader={() => "价格/buyNow/paypal"}>
           <WingBlank size="lg">
             <InputItem {...getFieldProps("price")} placeholder="价格">
               价格
             </InputItem>
           </WingBlank>
           <WingBlank size="lg">
-            <InputItem {...getFieldProps("url")} placeholder="url">
-              URL
+            <InputItem {...getFieldProps("buyNow")} placeholder="buyNow">
+            buyNow
             </InputItem>
           </WingBlank>
           <WingBlank size="lg">
             <TextareaItem
-              title="paypal"
-              {...getFieldProps("paypal")}
-              placeholder="paypal"
+              title="paypalCode"
+              {...getFieldProps("paypalCode")}
+              placeholder="paypalCode"
             ></TextareaItem>
           </WingBlank>
         </List>

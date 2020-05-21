@@ -1,37 +1,39 @@
 import axios from "axios";
-import { Toast } from 'antd-mobile';
+import { Toast } from "antd-mobile";
 import qs from "qs";
 // import { router, resetRouter } from "@/router";
-let path =''
-if(process.env.NODE_ENV =='development'){
-   path ='http://47.56.176.252:8890'
+let path = "";
+if (process.env.NODE_ENV == "development") {
+  path = "http://47.56.176.252:8890";
 }
-axios.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded";
-axios.defaults.transformRequest = [
-  function(data) {
-    return qs.stringify(data);
-  }
-];
+// axios.defaults.headers.post["Content-Type"] =
+//   "application/x-www-form-urlencoded";
+// axios.defaults.transformRequest = [
+//   function(data) {
+//     return qs.stringify(data);
+//   }
+// ];
 const service = axios.create({
-  // baseURL:'api', // url = base url + request url
+  // baseURL: "api", // url = base url + request url
   // // withCredentials: true, // send cookies when cross-domain requests
   // cancelToken: source.token,
   // timeout: 5000 // request timeout
+  headers: { "Content-Type": "multipart/form-data" },
 });
 // request interceptor
 service.interceptors.request.use(
-  config => {
+  (config) => {
     // do something before request is sent
 
-    config.params.token = localStorage.getItem('token')
-      // config.headers["token"] = getToken();
- 
-     
+    // config.params.token = localStorage.getItem('token')
+    // config.headers["token"] = getToken();
+    if (config.method === "get") {
+      config.data = qs.stringify(config.data);
+    }
 
     return config;
   },
-  error => {
+  (error) => {
     // do something with request error
     //console.log("error", error); // for debug
     return error;
@@ -51,24 +53,22 @@ service.interceptors.response.use(
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  response => {
+  (response) => {
     // const res = response.data;
 
     // if the custom code is not 20000, it is judged as an error.
     // if (res.code !== 1 && res.code !== 200) {
     //   // Message({
-     
 
     //   return Promise.reject(res);
     // } else {
     //   return res;
     // }
-    return response.data
+    return response.data;
   },
-  error => {
-    
+  (error) => {
     return error;
   }
 );
-export {path} ;
+export { path };
 export default service;
