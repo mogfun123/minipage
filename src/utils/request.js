@@ -14,12 +14,11 @@ axios.defaults.transformRequest = [
   }
 ];
 const service = axios.create({
-  baseURL:'api', // url = base url + request url
+  // baseURL:'api', // url = base url + request url
   // // withCredentials: true, // send cookies when cross-domain requests
   // cancelToken: source.token,
   // timeout: 5000 // request timeout
 });
-localStorage.setItem('token','MjhmZTRlOGJlOTY5OTU4ZWM5NTZlM2I3NTM3YTljZGUyMDIwMDUxOA==')
 // request interceptor
 service.interceptors.request.use(
   config => {
