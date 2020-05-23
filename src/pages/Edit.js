@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
 import { createForm } from "rc-form";
-import { uploadImages, uploadGoodsInfo } from ".././utils/api";
+import { uploadImages, getGoodData, uploadGoodsInfo } from ".././utils/api";
 import { path } from ".././utils/request";
 import { withRouter } from "react-router";
 
@@ -26,33 +26,25 @@ class Editpage extends Component {
     this.state = {
       isLoading: true,
       files: [],
+      goodInfo: {},
     };
   }
   componentDidMount() {
     this.fetchData();
+    console.log(this.props.location);
   }
   fetchData() {
-    // queryGoodList({
-    //   main_page: "products",
-    //   cid: "43",
-    //   limit: "5",
-    //   offset: page,
-    // }).then((res) => {
-    //   if (res.code == 0) {
-    //     genData(page, res.data);
-    //     console.log(dataBlobs, sectionIDs, rowIDs);
-    //     this.setState({
-    //       dataSource: this.state.dataSource.cloneWithRowsAndSections(
-    //         dataBlobs,
-    //         sectionIDs,
-    //         rowIDs
-    //       ),
-    //       isLoading: false,
-    //     });
-    //   } else {
-    //     Toast.fail(res.msg);
-    //   }
-    // });
+    let id = this.props.location.state.id;
+    if (!id) return;
+    getGoodData({
+      pid: id,
+    }).then((res) => {
+      if (res.code == 0) {
+        this.setState({ goodInfo: res.data });
+      } else {
+        Toast.fail(res.msg);
+      }
+    });
   }
   onSubmit = () => {
     const form = this.props.form;
@@ -77,21 +69,20 @@ class Editpage extends Component {
     //     return res;
     //   }
     // });
-     this.readyUploadGoodsInfo();
+    this.readyUploadGoodsInfo();
   };
   readyUploadGoodsInfo = (data) => {
     const form = this.props.form;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       uploadGoodsInfo({
-        images:'20200520/xcv.jpg',
-        ...fieldsValue
+        images: "20200520/xcv.jpg",
+        ...fieldsValue,
       }).then((res) => {
         if (res.code == 0) {
         }
       });
     });
-   
   };
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
@@ -101,13 +92,15 @@ class Editpage extends Component {
   };
   render() {
     const { getFieldProps } = this.props.form;
-    const { files } = this.state;
+    const { files, goodInfo } = this.state;
     return (
       <Fragment>
         <List renderHeader={() => "文案"}>
           <WingBlank size="lg">
             <TextareaItem
-              {...getFieldProps("description")}
+              {...getFieldProps("description", {
+                initialValue: "diwheiuh",
+              })}
               autoHeight
               placeholder="文案"
             />
@@ -130,19 +123,31 @@ class Editpage extends Component {
         <WhiteSpace size="sm" />
         <List renderHeader={() => "价格/buyNow/paypal"}>
           <WingBlank size="lg">
-            <InputItem {...getFieldProps("price")} placeholder="价格">
+            <InputItem
+              {...getFieldProps("price", {
+                initialValue: "price",
+              })}
+              placeholder="价格"
+            >
               价格
             </InputItem>
           </WingBlank>
           <WingBlank size="lg">
-            <InputItem {...getFieldProps("buyNow")} placeholder="buyNow">
-            buyNow
+            <InputItem
+              {...getFieldProps("buyNow", {
+                initialValue: "buyNow",
+              })}
+              placeholder="buyNow"
+            >
+              buyNow
             </InputItem>
           </WingBlank>
           <WingBlank size="lg">
             <TextareaItem
               title="paypalCode"
-              {...getFieldProps("paypalCode")}
+              {...getFieldProps("paypalCode", {
+                initialValue: "paypalCode",
+              })}
               placeholder="paypalCode"
             ></TextareaItem>
           </WingBlank>

@@ -7,6 +7,15 @@ export async function queryGoodList(option) {
     },
   });
 }
+export async function getGoodData(option) {
+  return request.get("/api/index.php", {
+    params: {
+      main_page: "products",
+      token: getToken(),
+      ...option,
+    },
+  });
+}
 export async function login(option) {
   return request.get("/api/index.php", {
     params: {
