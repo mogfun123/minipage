@@ -34,13 +34,21 @@ class Editpage extends Component {
     console.log(this.props.location);
   }
   fetchData() {
-    let id = this.props.location.state.id;
+    let state = this.props.location.state;
+    let id = state ? state.id : "";
     if (!id) return;
     getGoodData({
       pid: id,
     }).then((res) => {
       if (res.code == 0) {
-        this.setState({ goodInfo: res.data });
+        let images = res.data.image || [];
+        let files = images.map((item) => {
+          return {
+            dataurl:item,
+            url: path + "/images/" + item,
+          };
+        });
+        this.setState({ goodInfo: res.data, files });
       } else {
         Toast.fail(res.msg);
       }
@@ -51,44 +59,64 @@ class Editpage extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       console.log(fieldsValue);
-      //   this.readyUpLoadImage().then((files) => {
-      //     this.readyUploadGoodsInfo();
-      //   });
-      this.readyUpLoadImage();
+
+      this.readyUploadGoodsInfo();
     });
   };
-  readyUpLoadImage = () => {
-    // let { files } = this.state;
-    // let file = files[0].file;
-    // let formData = new FormData();
-    // formData.append('file', file);
-    // uploadImages(formData).then((res) => {
-    //   if (res.code == 0) {
-    //     console.log("res", res);
-    //     this.readyUploadGoodsInfo();
-    //     return res;
-    //   }
-    // });
-    this.readyUploadGoodsInfo();
-  };
-  readyUploadGoodsInfo = (data) => {
+
+  readyUploadGoodsInfo = () => {
     const form = this.props.form;
+    let files = this.state.files;
+    let state = this.props.location.state;
+    let id = state ? state.id : "";
+    let images = "";
+    let urls = files.map((item) => item.dataurl);
+    images = urls.join("|");
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      let data = { ...fieldsValue };
+      data.images = images;
+      data.status = 1;
+      if (id) {
+        data.type = "update";
+        data.pid = id;
+      }
       uploadGoodsInfo({
-        images: "20200520/xcv.jpg",
-        ...fieldsValue,
+        ...data,
       }).then((res) => {
         if (res.code == 0) {
+          Toast.success(res.msg);
+        } else {
+          Toast.fail(res.msg);
         }
       });
     });
   };
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
-    this.setState({
-      files,
-    });
+    let len = files.length - 1;
+    let file = files[len];
+    if (type == "add" && !file.dataurl) {
+      let formData = new FormData();
+      formData.append("file", file.file);
+      uploadImages(formData).then((res) => {
+        if (res.code == 0) {
+          file["dataurl"] = res.src;
+          this.setState({
+            files,
+          });
+        } else {
+          Toast.fail("图片上传失败");
+        }
+      });
+    } else {
+      this.setState({
+        files,
+      });
+    }
+  };
+  onImageClick = (index, fs) => {
+    console.log(index, fs);
   };
   render() {
     const { getFieldProps } = this.props.form;
@@ -98,8 +126,8 @@ class Editpage extends Component {
         <List renderHeader={() => "文案"}>
           <WingBlank size="lg">
             <TextareaItem
-              {...getFieldProps("description", {
-                initialValue: "diwheiuh",
+              {...getFieldProps("title", {
+                initialValue: goodInfo.title,
               })}
               autoHeight
               placeholder="文案"
@@ -113,9 +141,9 @@ class Editpage extends Component {
             <ImagePicker
               files={files}
               onChange={this.onFilesChange}
-              onImageClick={(index, fs) => console.log(index, fs)}
-              selectable={files.length < 15}
-              multiple={true}
+              onImageClick={this.onImageClick}
+              selectable={files.length <= 15}
+              multiple={false}
             />
             <WhiteSpace size="sm" />
           </WingBlank>
@@ -125,7 +153,7 @@ class Editpage extends Component {
           <WingBlank size="lg">
             <InputItem
               {...getFieldProps("price", {
-                initialValue: "price",
+                initialValue: goodInfo.price,
               })}
               placeholder="价格"
             >
@@ -135,7 +163,7 @@ class Editpage extends Component {
           <WingBlank size="lg">
             <InputItem
               {...getFieldProps("buyNow", {
-                initialValue: "buyNow",
+                initialValue: goodInfo.buyNow,
               })}
               placeholder="buyNow"
             >
@@ -146,7 +174,7 @@ class Editpage extends Component {
             <TextareaItem
               title="paypalCode"
               {...getFieldProps("paypalCode", {
-                initialValue: "paypalCode",
+                initialValue:goodInfo.paypalCode,
               })}
               placeholder="paypalCode"
             ></TextareaItem>
@@ -156,7 +184,7 @@ class Editpage extends Component {
           <WhiteSpace size="lg" />
           <Flex justify="center">
             <Button type="primary" onClick={this.onSubmit} inline>
-              primary
+              发布
             </Button>
           </Flex>
           <WhiteSpace size="lg" />
@@ -165,5 +193,5 @@ class Editpage extends Component {
     );
   }
 }
-const EditCom = withRouter(createForm()(Editpage));
+let EditCom = withRouter(createForm()(Editpage));
 export default EditCom;

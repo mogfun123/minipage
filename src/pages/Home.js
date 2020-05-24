@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router";
-import { queryGoodList } from ".././utils/api";
+import { queryGoodList, uploadGoodsInfo } from ".././utils/api";
 import { path } from ".././utils/request";
+import top from ".././top.png";
 import {
   List,
   ListView,
@@ -13,6 +14,7 @@ import {
   WhiteSpace,
   Toast,
 } from "antd-mobile";
+import { getToken } from "../utils";
 
 const separator = (sectionID, rowID) => (
   <div
@@ -33,44 +35,34 @@ const dataBlobs = {};
 let sectionIDs = [];
 let rowIDs = [];
 function genData(pIndex = 0, items) {
+  const ii = pIndex;
 
-    const ii = pIndex ;
-    const sectionName = `Section ${ii}`;
-    sectionIDs.push(sectionName);
-    dataBlobs[sectionName] = sectionName;
-    rowIDs[ii] = [];
+  for (let jj = 0; jj < items.length; jj++) {
+    const rowName = `S${ii}, R${jj}`;
 
-    for (let jj = 0; jj < items.length; jj++) {
-      const rowName = `S${ii}, R${jj}`;
-      rowIDs[ii].push(rowName);
-      dataBlobs[rowName] = items[jj];
-    }
-  
-  sectionIDs = [...sectionIDs];
-  rowIDs = [...rowIDs];
+    dataBlobs[rowName] = items[jj];
+  }
 }
 class Lists extends Component {
   constructor(props) {
     super(props);
-    const getSectionData = (dataBlob, sectionID) => dataBlob[sectionID];
-    const getRowData = (dataBlob, sectionID, rowID) => dataBlob[rowID];
+    // const getSectionData = (dataBlob, sectionID) => dataBlob[sectionID];
+    // const getRowData = (dataBlob, sectionID, rowID) => dataBlob[rowID];
 
     const dataSource = new ListView.DataSource({
-      getRowData,
-      getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
 
     this.state = {
       imgHeight: "69vw",
       page: 0,
-      limit:5,
+      limit: 5,
+      showTop: false,
       dataSource,
-      vision: true,
+      vision: getToken(),
       isLoading: true,
-      hasMore:true,
-      height: (document.documentElement.clientHeight * 3) / 4,
+      hasMore: true,
+      // height: (document.documentElement.clientHeight * 3) / 4,
     };
   }
   componentDidMount() {
@@ -90,21 +82,17 @@ class Lists extends Component {
       offset: page,
     }).then((res) => {
       if (res.code == 0) {
-        if(this.state.limit>res.data.length){
-          this.setState({hasMore:false})
+        if (this.state.limit > res.data.length) {
+          this.setState({ hasMore: false });
         }
         genData(page, res.data);
         console.log(dataBlobs, sectionIDs, rowIDs);
         this.setState({
-          dataSource: this.state.dataSource.cloneWithRowsAndSections(
-            dataBlobs,
-            sectionIDs,
-            rowIDs
-          ),
+          dataSource: this.state.dataSource.cloneWithRows(dataBlobs),
           isLoading: false,
         });
       } else {
-        this.setState({isLoading:false,hasMore:false})
+        this.setState({ isLoading: false, hasMore: false });
         // Toast.fail(res.msg);
       }
     });
@@ -121,10 +109,36 @@ class Lists extends Component {
       state: {},
     });
   };
-  toTop=()=>{
-    this.state.dataSource.scrollTo(0,0)
-  }
-  deleteAction = (row) => {};
+  toTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+  pageScroll = () => {
+    if (
+      document.documentElement.scrollTop >
+      2 * document.documentElement.clientHeight
+    ) {
+      this.setState({ showTop: true });
+    } else {
+      this.setState({ showTop: false });
+    }
+  };
+
+  deleteAction = (row) => {
+    uploadGoodsInfo({
+      pid: row.id,
+      status: 0,
+      type: "update",
+    }).then((res) => {
+      if(res.code==0){
+        Toast.success(res.msg)
+      }else{
+        Toast.fail(res.msg)
+      }
+    });
+  };
   onEndReached = (event) => {
     let page = this.state.page;
     // load new data
@@ -136,9 +150,9 @@ class Lists extends Component {
     this.fetchList();
   };
   render() {
-    let vision = this.state.vision;
+    let { vision, showTop } = this.state;
     const row = (rowData, sectionID, rowID) => {
-      console.log("rowData", rowID, rowData);
+      // console.log("rowData", rowID, rowData);
       return (
         <div key={rowID} className="list_item">
           <WingBlank size="lg">
@@ -150,8 +164,7 @@ class Lists extends Component {
                   style={{ height: this.state.imgHeight }}
                 >
                   <img
-                    // src={path + imgurl}
-                    src="https://zos.alipayobjects.com/rmsportal/dKbkpPXKfvZzWCM.png"
+                    src={path + "/images/" + imgurl}
                     alt=""
                     className="carousel_item_img"
                     onLoad={() => {
@@ -194,25 +207,28 @@ class Lists extends Component {
           </WingBlank>
           <WingBlank size="lg">
             <div className="good_title">
-              Product title Product title Product Product title titleProduct
-              titleProducttitle Product Product titletitleProduct Product
-              titletitleProduct Product titletitleProduct Product titletitle
-              {/* {rowData.title} */}
+            
+              {rowData.title}
             </div>
             <div className="good_price"> {rowData.price}</div>
             {rowData.paypal_code ? (
               <div className="good_btns_style1">
                 <Button type="primary" inline size="small">
-                  Paypal
+                  <div dangerouslySetInnerHTML={ {__html:rowData.paypal_code}}></div>
                 </Button>
-                <Button type="primary" inline size="small">
-                  <a href={rowData.buy_now}>Buy</a>
+                <Button
+                  href={rowData.buy_now}
+                  type="primary"
+                  inline
+                  size="small"
+                >
+                  Buy
                 </Button>
               </div>
             ) : (
               <div className="good_btns_style2">
-                <Button type="primary" size="small">
-                  <a href={rowData.buy_now}>Buy</a>
+                <Button href="http://baidu.com" type="primary" size="small">
+                  Buy
                 </Button>
               </div>
             )}
@@ -223,7 +239,6 @@ class Lists extends Component {
     return (
       <Fragment>
         <ListView
-        
           dataSource={this.state.dataSource}
           renderHeader={() => <span>HiLouis</span>}
           renderFooter={() => (
@@ -232,43 +247,46 @@ class Lists extends Component {
             </div>
           )}
           renderRow={row}
-          useBodyScroll={true}
+          useBodyScroll
           renderSeparator={separator}
-         
           pageSize={5}
           onScroll={() => {
-            console.log("scroll");
+            this.pageScroll();
           }}
           scrollRenderAheadDistance={500}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={10}
         />
-        <WingBlank>
-          <div className="release_btn">
-         { vision? <Button
+
+        <div className="release_btn">
+          {vision ? (
+            <Button
               type="primary"
               onClick={() => {
                 this.releaseAction();
               }}
-              style={{ marginRight: "5px" }}
+              style={{ marginBottom: "5px" }}
               inline
               size="small"
             >
               发布
-            </Button>:""}
-            {/* <Button
-              type="primary"
+            </Button>
+          ) : (
+            ""
+          )}
+          {showTop ? (
+            <div
+              className="top_btn"
               onClick={() => {
                 this.toTop();
               }}
-              style={{ marginRight: "5px" }}
-              inline
-              size="small"
             >
-              to Top
-            </Button> */}
-          </div>
-        </WingBlank>
+              <img src={top} alt="top"></img>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
       </Fragment>
     );
   }
