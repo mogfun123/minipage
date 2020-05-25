@@ -77,7 +77,7 @@ class Lists extends Component {
     let limit = this.state.limit;
     queryGoodList({
       main_page: "products",
-      cid: "43",
+      cid: "0",
       limit: limit,
       offset: page,
     }).then((res) => {
@@ -152,11 +152,11 @@ class Lists extends Component {
   render() {
     let { vision, showTop } = this.state;
     const row = (rowData, sectionID, rowID) => {
-      // console.log("rowData", rowID, rowData);
+       console.log("rowData", rowID, rowData);
       return (
         <div key={rowID} className="list_item">
           <WingBlank size="lg">
-            <Carousel autoplay={false} infinite>
+         {rowData.image?<Carousel autoplay={false} infinite>
               {rowData.image.map((imgurl) => (
                 <a
                   key={rowID}
@@ -175,7 +175,8 @@ class Lists extends Component {
                   />
                 </a>
               ))}
-            </Carousel>
+            </Carousel>:''
+            } 
             {vision ? (
               <div className="opreate">
                 <Button

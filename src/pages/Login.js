@@ -7,11 +7,15 @@ import { withRouter } from "react-router";
 // import { browserHistory } from 'react-router'
 class LoginPage extends Component {
   state = {
-    uname: "admin",
-    pwd: "2c1be7c6b94cd14c0b855a38900047a2",
-    sign:'28fe4e8be969958ec956e3b7537a9cde',
+    uname: "",
+    pwd: "",
+    sign:'',
   };
-  componentDidMount() {}
+  componentDidMount() {
+    if (process.env.NODE_ENV == "development") {
+      this.setState({uname:'admin',pwd:'2c1be7c6b94cd14c0b855a38900047a2',sign:'28fe4e8be969958ec956e3b7537a9cde'})
+    }
+  }
 
   onUserChange = (value) => {
     value = value.replace(/\s/g, "");
@@ -43,6 +47,12 @@ class LoginPage extends Component {
       pwd: value,
     });
   };
+  onSignChange = (value)=>{
+    value = value.replace(/\s/g, "");
+    this.setState({
+      sign: value,
+    });
+  }
   render() {
     const { getFieldProps } = this.props.form;
     return (
@@ -70,7 +80,19 @@ class LoginPage extends Component {
           >
             密码
           </InputItem>
+          <WhiteSpace size="xl" />
+          <InputItem
+            {...getFieldProps("sign")}
+            clear
+            placeholder="sign"
+            value={this.state.sign}
+            onChange={this.onSignChange}
+           
+          >
+            sign
+          </InputItem>
           <List.Item>
+            
           <WhiteSpace size="xl" />
             <Button type="primary"  onClick={this.handleClick}> 登录</Button>
           </List.Item>

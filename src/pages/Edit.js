@@ -149,7 +149,7 @@ class Editpage extends Component {
           </WingBlank>
         </List>
         <WhiteSpace size="sm" />
-        <List renderHeader={() => "价格/buyNow/paypal"}>
+        <List renderHeader={() => "价格"}>
           <WingBlank size="lg">
             <InputItem
               {...getFieldProps("price", {
@@ -157,29 +157,36 @@ class Editpage extends Component {
               })}
               placeholder="价格"
             >
-              价格
+             
             </InputItem>
           </WingBlank>
-          <WingBlank size="lg">
+        
+         
+        </List>
+        <List renderHeader={() => "buyNow"}>
+        <WingBlank size="lg">
             <InputItem
               {...getFieldProps("buyNow", {
                 initialValue: goodInfo.buyNow,
               })}
               placeholder="buyNow"
             >
-              buyNow
+              
             </InputItem>
           </WingBlank>
+          </List>
+          <List renderHeader={() => "paypalCode"}>
           <WingBlank size="lg">
             <TextareaItem
-              title="paypalCode"
+             
               {...getFieldProps("paypalCode", {
                 initialValue:goodInfo.paypalCode,
               })}
+              autoHeight
               placeholder="paypalCode"
             ></TextareaItem>
           </WingBlank>
-        </List>
+            </List>
         <List>
           <WhiteSpace size="lg" />
           <Flex justify="center">
