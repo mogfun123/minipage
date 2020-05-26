@@ -42,9 +42,9 @@ module.exports = {
       libraryName: 'antd-mobile',
       style: 'css',
     }),
-    addLessLoader(),
+    //addLessLoader(),
     // addPostcssPlugins([require('postcss-pxtorem')({ rootValue: 75, propList: ['*'], minPixelValue: 2, selectorBlackList: ['am-'] })]),
-    addCustomize(),
+    //addCustomize(),
   ),
   devServer: overrideDevServer(
     devServerConfig()
