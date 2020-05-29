@@ -241,7 +241,6 @@ class Lists extends Component {
       <Fragment>
         <ListView
           dataSource={this.state.dataSource}
-          renderHeader={() => <span>HiLouis</span>}
           renderFooter={() => (
             <div style={{ padding: 20, textAlign: "center" }}>
               {this.state.isLoading ? "Loading..." : "Loaded"}
