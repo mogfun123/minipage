@@ -9,7 +9,6 @@ class LoginPage extends Component {
   state = {
     uname: "",
     pwd: "",
-    sign:'',
   };
   componentDidMount() {
     if (process.env.NODE_ENV == "development") {
@@ -24,10 +23,9 @@ class LoginPage extends Component {
     });
   };
   handleClick = () => {
-    let { uname, pwd,sign } = this.state;
+    let { uname, pwd } = this.state;
     login({
       uname,
-      sign,
       pwd,
     }).then((res)=>{
       if(res.code==0){
@@ -47,12 +45,7 @@ class LoginPage extends Component {
       pwd: value,
     });
   };
-  onSignChange = (value)=>{
-    value = value.replace(/\s/g, "");
-    this.setState({
-      sign: value,
-    });
-  }
+
   render() {
     const { getFieldProps } = this.props.form;
     return (
@@ -80,17 +73,7 @@ class LoginPage extends Component {
           >
             密码
           </InputItem>
-          <WhiteSpace size="xl" />
-          <InputItem
-            {...getFieldProps("sign")}
-            clear
-            placeholder="sign"
-            value={this.state.sign}
-            onChange={this.onSignChange}
-           
-          >
-            sign
-          </InputItem>
+        
           <List.Item>
             
           <WhiteSpace size="xl" />

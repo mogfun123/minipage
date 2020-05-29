@@ -20,7 +20,6 @@ export async function login(option) {
   return request.get("/api/index.php", {
     params: {
       main_page: "login",
-      sign: "28fe4e8be969958ec956e3b7537a9cde",
       ...option,
     },
   });
