@@ -228,7 +228,7 @@ class Lists extends Component {
               </div>
             ) : (
               <div className="good_btns_style2">
-                <Button href="http://baidu.com" type="primary" size="small">
+                <Button href={rowData.buy_now} type="primary" size="small">
                   Buy
                 </Button>
               </div>

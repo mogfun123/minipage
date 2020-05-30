@@ -44,7 +44,7 @@ class Editpage extends Component {
         let images = res.data.image || [];
         let files = images.map((item) => {
           return {
-            dataurl:item,
+            dataurl: item,
             url: path + "/images/" + item,
           };
         });
@@ -92,23 +92,35 @@ class Editpage extends Component {
       });
     });
   };
+  uploadimg(file) {
+    let formData = new FormData();
+    formData.append("file", file.file);
+    return uploadImages(formData).then((res) => {
+      if (res.code == 0) {
+        file["dataurl"] = res.src;
+        return res
+      } else {
+        Toast.fail("图片上传失败");
+      }
+    });
+  }
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
-    let len = files.length - 1;
-    let file = files[len];
-    if (type == "add" && !file.dataurl) {
-      let formData = new FormData();
-      formData.append("file", file.file);
-      uploadImages(formData).then((res) => {
-        if (res.code == 0) {
-          file["dataurl"] = res.src;
-          this.setState({
-            files,
-          });
-        } else {
-          Toast.fail("图片上传失败");
-        }
-      });
+
+    if (type == "add") {
+      let _files = files.filter((item) => !item.dataurl).map((item) => {
+        return this.uploadimg(item)
+      })
+
+      Promise.all(_files).then((arr) => {
+        files = files.filter((item) => item.dataurl)
+        this.setState({ files })
+      }, () => {
+        Toast.fail("图片上传失败s");
+      })
+
+
+
     } else {
       this.setState({
         files,
@@ -143,7 +155,7 @@ class Editpage extends Component {
               onChange={this.onFilesChange}
               onImageClick={this.onImageClick}
               selectable={files.length <= 15}
-              multiple={false}
+              multiple={true}
             />
             <WhiteSpace size="sm" />
           </WingBlank>
@@ -157,36 +169,36 @@ class Editpage extends Component {
               })}
               placeholder="价格"
             >
-             
+
             </InputItem>
           </WingBlank>
-        
-         
+
+
         </List>
         <List renderHeader={() => "buyNow"}>
-        <WingBlank size="lg">
+          <WingBlank size="lg">
             <InputItem
               {...getFieldProps("buyNow", {
                 initialValue: goodInfo.buyNow,
               })}
               placeholder="buyNow"
             >
-              
+
             </InputItem>
           </WingBlank>
-          </List>
-          <List renderHeader={() => "paypalCode"}>
+        </List>
+        <List renderHeader={() => "paypalCode"}>
           <WingBlank size="lg">
             <TextareaItem
-             
+
               {...getFieldProps("paypalCode", {
-                initialValue:goodInfo.paypalCode,
+                initialValue: goodInfo.paypalCode,
               })}
               autoHeight
               placeholder="paypalCode"
             ></TextareaItem>
           </WingBlank>
-            </List>
+        </List>
         <List>
           <WhiteSpace size="lg" />
           <Flex justify="center">

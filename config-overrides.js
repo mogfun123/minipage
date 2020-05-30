@@ -27,7 +27,8 @@ const devServerConfig = () => config => {
     compress: true,
     proxy: {
       '/api': {
-        target: 'http://47.56.176.252:8890',
+        // target: 'http://47.56.176.252:8890',
+        target: 'http://47.244.3.193:8888/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': 'api',
