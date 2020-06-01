@@ -86,7 +86,7 @@ class Editpage extends Component {
       }).then((res) => {
         if (res.code == 0) {
           Toast.success(res.msg);
-        } else {
+        }else {
           Toast.fail(res.msg);
         }
       });
@@ -99,24 +99,24 @@ class Editpage extends Component {
       if (res.code == 0) {
         file["dataurl"] = res.src;
         return file
-      } else {
-        Toast.fail("图片上传失败");
-      }
+      } else{
+        Toast.fail(res.msg);
+      } 
     });
   }
   onFilesChange = (files, type, index) => {
     console.log(files, type, index);
     let old = files.filter((item) => item.dataurl)
-    let newlist =  files.filter((item) => !item.dataurl)
+    let newlist = files.filter((item) => !item.dataurl)
 
     if (type == "add") {
       let _files = newlist.map((item) => {
         return this.uploadimg(item)
       })
-     
+
 
       Promise.all(_files).then((arr) => {
-        this.setState({ files:[...old,...arr] })
+        this.setState({ files: [...old, ...arr] })
       }, () => {
         Toast.fail("图片上传失败s");
       })
