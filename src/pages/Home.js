@@ -54,7 +54,7 @@ class Lists extends Component {
     });
 
     this.state = {
-      imgHeight: "69vw",
+      imgHeight: "80vw",
       page: 0,
       limit: 5,
       showTop: false,
@@ -162,6 +162,7 @@ class Lists extends Component {
                   key={rowID}
                   className="carousel_item"
                   style={{ height: this.state.imgHeight }}
+                  href={path + "/images/" + imgurl}
                 >
                   <img
                     src={path + "/images/" + imgurl}
@@ -214,9 +215,7 @@ class Lists extends Component {
             <div className="good_price"> {rowData.price}</div>
             {rowData.paypal_code ? (
               <div className="good_btns_style1">
-                <Button type="primary" inline size="small">
                   <div dangerouslySetInnerHTML={ {__html:rowData.paypal_code}}></div>
-                </Button>
                 <Button
                   href={rowData.buy_now}
                   type="primary"
