@@ -156,7 +156,7 @@ class Editpage extends Component {
               files={files}
               onChange={this.onFilesChange}
               onImageClick={this.onImageClick}
-              selectable={files.length <= 15}
+              selectable
               multiple={true}
             />
             <WhiteSpace size="sm" />

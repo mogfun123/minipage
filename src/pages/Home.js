@@ -218,17 +218,18 @@ class Lists extends Component {
                   <div dangerouslySetInnerHTML={ {__html:rowData.paypal_code}}></div>
                 <Button
                   href={rowData.buy_now}
+                  disabled={!rowData.buy_now}
                   type="primary"
                   inline
                   size="small"
                 >
-                  Buy
+                  Learn more
                 </Button>
               </div>
             ) : (
               <div className="good_btns_style2">
-                <Button href={rowData.buy_now} type="primary" size="small">
-                  Buy
+                <Button href={rowData.buy_now}  disabled={!rowData.buy_now} type="primary" size="small">
+                Learn more
                 </Button>
               </div>
             )}
